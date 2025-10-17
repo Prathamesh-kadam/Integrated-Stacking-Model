@@ -77,11 +77,10 @@ def convert_to_db(image):
     return db_image
 
 def generate_mask_lib(db_image):
-    # Define the threshold values for different ice types in dB
-    threshold_ice_free = [-np.inf,0]  # Ice Free threshold
-    threshold_firstyearice = [0, 4]  # First-Year Ice threshold
-    threshold_ice_bergs = [4,6]  # Ice Covered threshold
-    threshold_multiyearice = [6, np.inf]  # Multi-Year Ice threshold
+    threshold_ice_free = [-np.inf,0] 
+    threshold_firstyearice = [0, 4] 
+    threshold_ice_bergs = [4,6] 
+    threshold_multiyearice = [6, np.inf] 
     
 
     mask_ice_free = (db_image >= threshold_ice_free[0]) & (db_image <= threshold_ice_free[1])
@@ -101,22 +100,21 @@ def generate_mask_lib(db_image):
 
 def map_backscatter_to_label(backscatter):
     if -np.inf <= backscatter <= 0:
-        return 0  # Ice Free
+        return 0  
     elif 0 <= backscatter <= 4:
-        return 1  # Ice bergs
+        return 1  
     elif 4 <= backscatter <= 7:
-        return 2  # Multi-Year Ice
+        return 2 
     elif 7<= backscatter <= np.inf:
-        return 3  # First-Year Ice
+        return 3 
     else:
-        return -1  # Invalid label
+        return -1 
 
 folder_path = "/kaggle/working/norm_data"
 backscatter_values = []
 y = []
 X = []
 for filename in os.listdir(folder_path):
-    # Load the SAR image (TIFF)
     image_path = os.path.join(folder_path, filename)
     image_array = tifffile.imread(image_path)
 
@@ -125,7 +123,7 @@ for filename in os.listdir(folder_path):
         continue
 
     db_image = convert_to_db(image_array)
-    #print(f"Filename: {filename}, Decibel value: {db_image}")
+    print(f"Filename: {filename}, Decibel value: {db_image}")
     
     backscatter_value = np.nanmean(db_image)
 
@@ -163,7 +161,7 @@ if not os.path.exists(save_dir):
 print('Performing data augmentation')
 augmented_images = []
 augmented_labels = []
-num_augmented_samples = 3  # Number of augmented samples to generate per original image
+num_augmented_samples = 3
 
 for i in range(len(X)):
     img = X[i]
