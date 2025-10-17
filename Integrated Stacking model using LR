@@ -1,0 +1,43 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import itertools
+from sklearn.ensemble import StackingClassifier
+from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, matthews_corrcoef, f1_score, confusion_matrix
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+
+X, y = make_classification(n_samples=1000, n_features=20, random_state=42)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+svm = SVC()
+mlp = MLPClassifier()
+
+estimator_list = [('svm_rbf', svm), ('mlp', mlp)]
+
+stack_model = StackingClassifier(estimators=estimator_list, final_estimator=LogisticRegression())
+
+stack_model.fit(X_train, y_train)
+
+y_train_pred = stack_model.predict(X_train)
+y_test_pred = stack_model.predict(X_test)
+
+stack_model_train_accuracy = accuracy_score(y_train, y_train_pred)
+stack_model_train_mcc = matthews_corrcoef(y_train, y_train_pred)
+stack_model_train_f1 = f1_score(y_train, y_train_pred, average='weighted')
+stack_model_test_accuracy = accuracy_score(y_test, y_test_pred)
+stack_model_test_mcc = matthews_corrcoef(y_test, y_test_pred)
+stack_model_test_f1 = f1_score(y_test, y_test_pred, average='weighted')
+
+print('Model performance for Training set')
+print('- Accuracy:', stack_model_train_accuracy)
+print('- MCC:', stack_model_train_mcc)
+print('- F1 score:', stack_model_train_f1)
+print('----------------------------------')
+print('Model performance for Test set')
+print('- Accuracy:', stack_model_test_accuracy)
+print('- MCC:', stack_model_test_mcc)
+print('- F1 score:', stack_model_test_f1)
